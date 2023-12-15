@@ -4,12 +4,8 @@
   "description": "实现浏览器历史记录的查看和统计",
   "version": "1.0",
   "permissions": [
-    "storage",
-    "activeTab",
-    "history",
-    "downloads",
-    "tabs",
-    "favicon"
+    "history", 
+    "downloads"
   ],
 
   "icons": {
@@ -19,21 +15,21 @@
     "128": "images/icon-128.png"
   },
 
-  "web_accessible_resources": [
-    {
-      "resources": ["_favicon/*"],
-      "matches": ["<all_urls>"],
-      "extension_ids": ["*"]
-    }
-  ],
-  
   "action": {
-    "default_popup": "history.html",
+    "default_popup": "index.html",
     "default_icon": {
       "16": "images/icon-16.png",
       "32": "images/icon-32.png",
       "48": "images/icon-64.png",
       "128": "images/icon-128.png"
     }
-  }
+  },
+  "content_scripts": [
+    {
+      "js": ["scripts/content.js"],
+      "matches": [
+        "*://*/*"
+      ]
+    }
+  ]
 }
