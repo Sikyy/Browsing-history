@@ -4,12 +4,12 @@
   "description": "实现浏览器历史记录的查看和统计",
   "version": "1.0",
   "permissions": [
+    "tabs",
     "storage",
-    "activeTab",
     "history",
     "downloads",
-    "tabs",
-    "favicon"
+    "favicon",
+    "storage"
   ],
 
   "icons": {

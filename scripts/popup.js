@@ -1,27 +1,64 @@
-// popup.js
 document.addEventListener('DOMContentLoaded', function () {
   var historyList = document.getElementById('historyList');
 
-  // Function to get favicon URL
-  function getFaviconURL(url, callback) {
-    chrome.tabs.query({ url: url }, function (tabs) {
-      if (tabs && tabs.length > 0 && tabs[0].favIconUrl) {
-        callback(tabs[0].favIconUrl);
+  // 在页面打开时，将 favicon 信息存储到本地存储中
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  chrome.tabs.get(activeInfo.tabId, function (tab) {
+    if (tab && tab.favIconUrl) {
+      var domain = extractDomain(tab.url);
+      var faviconInfo = {
+        faviconUrl: tab.favIconUrl
+      };
+
+      // 将 favicon 信息存储到本地存储中
+      chrome.storage.local.set({ [domain]: faviconInfo });
+    }
+  });
+});
+
+// 在标签页更新时，也更新 favicon 信息
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.status === 'complete' && tab.url && tab.favIconUrl) {
+    var domain = extractDomain(tab.url);
+    var faviconInfo = {
+      faviconUrl: tab.favIconUrl
+    };
+
+    // 将 favicon 信息存储到本地存储中
+    chrome.storage.local.set({ [domain]: faviconInfo });
+  }
+});
+
+
+  // 从本地存储中获取 favicon 信息
+  function getFaviconInfo(url, callback) {
+    var domain = extractDomain(url);
+
+    chrome.storage.local.get([domain], function (result) {
+      var faviconInfo = result[domain];
+      if (faviconInfo) {
+        callback(faviconInfo.faviconUrl);
       } else {
-        // 如果没有 favicon，则显示默认图标
-        callback('images/icon-16.png');
+        callback(null); // 如果找不到 favicon 信息，返回 null 或其他默认值
       }
     });
   }
 
-  // 更新历史记录
+
+  // 从 URL 中提取二级域名的函数
+  function extractDomain(url) {
+    var match = url.match(/^(?:https?:\/\/)?(?:[^@\n]+@)?(?:www\.)?([^:/\n?]+)/im);
+    return match ? match[1] : null;
+  }
+
+  // 更新历史记录的函数
   function updateHistory() {
     // 清空历史记录列表
     historyList.innerHTML = '';
 
-    // 调用chrome.history.search方法
+    // 使用 chrome.history.search 方法获取历史记录
     chrome.history.search({ text: '', startTime: 0, endTime: Date.now(), maxResults: 100 }, function (historyItems) {
-      // 将历史记录显示在history页面上
+      // 遍历历史记录项并在页面上显示
       historyItems.forEach(function (item) {
         var li = document.createElement('li');
 
@@ -30,25 +67,26 @@ document.addEventListener('DOMContentLoaded', function () {
         icon.className = 'favicon'; // 添加一个类名以便样式化
         li.appendChild(icon);
 
-        //创建链接元素
+        // 创建链接元素
         var link = document.createElement('a');
         link.textContent = item.title;
         link.href = item.url;
-        link.target = '_blank'; // 在新标签页打开链接
+        link.target = '_blank'; // 在新标签页中打开链接
         li.appendChild(link);
 
-        // 显示URL
+        // 显示 URL
         var urlSpan = document.createElement('span');
         urlSpan.textContent = ' - ' + item.url;
         li.appendChild(urlSpan);
 
         // 获取页面的 favicon，并设置图标的 src 属性
-        getFaviconURL(item.url, function (faviconUrl) {
+        getFaviconInfo(item.url, function (faviconUrl) {
           icon.src = faviconUrl;
           icon.width = 16;
           icon.height = 16;
         });
 
+        // 将当前历史记录项添加到历史记录列表
         historyList.appendChild(li);
       });
     });
