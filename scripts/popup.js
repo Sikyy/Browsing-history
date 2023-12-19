@@ -1,33 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
   var historyList = document.getElementById('historyList');
 
-  // 在页面打开时，将 favicon 信息存储到本地存储中
+// 在页面打开时，将 favicon 信息存储到本地存储中
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   chrome.tabs.get(activeInfo.tabId, function (tab) {
-    if (tab && tab.favIconUrl) {
+    if (tab && tab.url) {
       var domain = extractDomain(tab.url);
-      var faviconInfo = {
-        faviconUrl: tab.favIconUrl
-      };
+
+      // 使用 Google Favicon API 获取网站的 favicon
+      var googleFaviconUrl = 'https://www.google.com/s2/favicons?domain=' + domain;
 
       // 将 favicon 信息存储到本地存储中
-      chrome.storage.local.set({ [domain]: faviconInfo });
+      chrome.storage.local.set({ [domain]: { faviconUrl: googleFaviconUrl } });
     }
   });
 });
 
 // 在标签页更新时，也更新 favicon 信息
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  if (changeInfo.status === 'complete' && tab.url && tab.favIconUrl) {
+  if (changeInfo.status === 'complete' && tab.url) {
     var domain = extractDomain(tab.url);
-    var faviconInfo = {
-      faviconUrl: tab.favIconUrl
-    };
+
+    // 使用 Google Favicon API 获取网站的 favicon
+    var googleFaviconUrl = 'https://www.google.com/s2/favicons?domain=' + domain;
 
     // 将 favicon 信息存储到本地存储中
-    chrome.storage.local.set({ [domain]: faviconInfo });
+    chrome.storage.local.set({ [domain]: { faviconUrl: googleFaviconUrl } });
   }
 });
+
 
 
   // 从本地存储中获取 favicon 信息
