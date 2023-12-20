@@ -76,9 +76,9 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
         li.appendChild(link);
 
         // 显示 URL
-        var urlSpan = document.createElement('span');
-        urlSpan.textContent = ' - ' + item.url;
-        li.appendChild(urlSpan);
+        // var urlSpan = document.createElement('span');
+        // urlSpan.textContent = ' - ' + item.url;
+        // li.appendChild(urlSpan);
 
         // 获取页面的 favicon，并设置图标的 src 属性
         getFaviconInfo(item.url, function (faviconUrl) {

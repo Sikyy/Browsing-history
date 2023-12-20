@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>导出设置</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>导出设置</h1>
+  
+  <label for="recordRange">选择历史记录数量：</label>
+  <input type="range" id="recordRange" min="1" max="100" step="1" value="10">
+  <span id="recordCount">10</span>
+
+  <br>
+
+  <label for="backgroundColor">选择背景颜色：</label>
+  <input type="color" id="backgroundColor" value="#ffffff">
+
+  <br>
+
+  <label for="backgroundImage">选择背景图片：</label>
+  <input type="file" id="backgroundImage">
+
+  <br>
+
+  <button id="exportButton">导出图表</button>
+
+  <script>
+    // 获取用户设置
+    const recordRangeInput = document.getElementById('recordRange');
+    const recordCountSpan = document.getElementById('recordCount');
+    const backgroundColorInput = document.getElementById('backgroundColor');
+    const backgroundImageInput = document.getElementById('backgroundImage');
+    const exportButton = document.getElementById('exportButton');
+
+    recordRangeInput.addEventListener('input', function () {
+      recordCountSpan.textContent = recordRangeInput.value;
+    });
+
+    exportButton.addEventListener('click', function () {
+      const recordCount = parseInt(recordRangeInput.value, 10);
+      const backgroundColor = backgroundColorInput.value;
+      const backgroundImage = backgroundImageInput.files[0];
+
+      // 在这里执行导出的逻辑，使用用户设置生成图表并导出为 PNG 图片
+      exportChart(recordCount, backgroundColor, backgroundImage);
+    });
+
+    function exportChart(recordCount, backgroundColor, backgroundImage) {
+      // 这里可以使用之前提到的 Chart.js 生成图表和导出 PNG 图片的逻辑
+      // ...
+
+      // 提示用户导出成功或其他信息
+      alert('导出成功！');
+    }
+  </script>
+</body>
+</html>
